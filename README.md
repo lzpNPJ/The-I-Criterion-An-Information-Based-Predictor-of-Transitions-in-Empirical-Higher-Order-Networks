@@ -1,0 +1,2 @@
+# The-I-Criterion-An-Information-Based-Predictor-of-Transitions-in-Empirical-Higher-Order-Networks
+This repository contains code for validating the I-criterion as a predictor of explosive (first-order) phase transitions in complex networks with higher-order interactions. The I-criterion quantifies the sharpness of transitions and effectively distinguishes between continuous and explosive dynamics.
