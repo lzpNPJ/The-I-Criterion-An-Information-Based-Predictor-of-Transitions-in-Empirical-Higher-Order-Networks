@@ -103,9 +103,9 @@ If you use this code in your research, please cite:
 bibtex
 @article{your_paper_2024,
   title={I-Criterion Validation on Empirical Hypergraphs},
-  author={Your Name},
-  journal={Journal Name},
-  year={2024}
+  author={LI Zhenpeng et al.},
+  journal={NJP},
+  year={2026}
 }
 License
 MIT License - see LICENSE for details.
