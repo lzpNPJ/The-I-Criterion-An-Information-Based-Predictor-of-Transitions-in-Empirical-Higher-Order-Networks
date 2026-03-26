@@ -1,162 +1,117 @@
-# The-I-Criterion-An-Information-Based-Predictor-of-Transitions-in-Empirical-Higher-Order-Networks
-This repository contains code for validating the I-criterion as a predictor of explosive (first-order) phase transitions in complex networks with higher-order interactions. The I-criterion quantifies the sharpness of transitions and effectively distinguishes between continuous and explosive dynamics.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# I-Criterion Validation on Empirical Hypergraphs
-
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-Validation of I-criterion for detecting explosive transitions in higher-order networks.
+# I-Criterion for Explosive Transitions in Higher-Order Networks
 
 ## Overview
 
-This repository contains code for validating the I-criterion as a predictor of explosive (first-order) phase transitions in complex networks with higher-order interactions. The I-criterion quantifies the sharpness of transitions and effectively distinguishes between continuous and explosive dynamics.
+This repository contains the code and data for the paper:
 
-### Key Features
-- **7 real-world hypergraph networks** (C. elegans, mouse, rhesus monkey, etc.)
-- **3 dynamical processes**: SIS epidemic, Kuramoto synchronization, Evolutionary game theory
-- **630 data samples** (7 networks × 3 dynamics × 30 parameter points)
-- **Leave-one-network-out cross-validation**
-- **Publication-ready figures** (PDF/PNG) for journal submission
+**"The I-Criterion: An Information-Based Predictor of Explosive Transitions in Empirical Higher-Order Networks"**
 
-## Files
+The I-criterion is a novel information-based predictor that captures the competition between information propagation and localization. It requires only steady-state hysteresis data and achieves **94.0% average test accuracy** across seven empirical neural networks and three dynamical models.
 
-### `NJP_hypersis_7_3.py`
-**Hysteresis data generator** - Generates raw hysteresis data for all 7 networks across 3 dynamical processes.
+## Repository Structure
+I-criterion-validation/
+├── README.md # This file
+├── requirements.txt # Python dependencies
+├── generate_hysteresis.py # Generate hysteresis data (30 points per dynamics)
+├── analyze_I_criterion.py # Main analysis code (I-value calculation, cross-validation, figures)
+├── data/
+│ └── all_results_paper.json # Network structural parameters (N, ⟨k⟩, T, λ_max) - used only for Table 1
+├── results/
+│ ├── Figure1.pdf/png # I-value distribution + ROC + confusion matrix
+│ ├── Figure2.pdf/png # Network accuracy + per-dynamics heatmap
+│ ├── Figure3.pdf/png # I-value vs parameter for all 7 networks
+│ └── Table1.tex/csv # Network statistics table
+└── paper/
+└── main.tex # LaTeX source for the paper
 
-- Loads GraphML network files and extracts maximal cliques (size ≥ 3) as hyperedges
-- Builds 3-body tensors (W₃) and projected adjacency matrices
-- Simulates forward/backward dynamics with 30 parameter points per dynamics
-- Uses parallel processing (6 workers) for efficient computation
-- Outputs: CSV files for each network/dynamics combination
 
-**Output format:**
-hysteresis_sis.csv # λ₁ parameter, low_init, high_init
-hysteresis_kuramoto.csv # σ₁ parameter, low_init, high_init
-hysteresis_game.csv # r parameter, low_init, high_init
+## Requirements
 
-text
-
-### `NJP.py`
-**Analysis and visualization** - Computes I-criterion and generates all publication figures.
-
-- Computes I-value for each sample (I = log(v_info / H))
-- Implements leave-one-network-out cross-validation
-- Finds optimal I_c thresholds and evaluates classification accuracy
-- Generates 3 main figures + 1 table:
-
-**Figure 1**: I-value distribution (boxplot), ROC curve, confusion matrix
-**Figure 2**: Network-level accuracy bar chart + per-dynamics heatmap
-**Figure 3**: I-value vs control parameter scatter plots (all 7 networks)
-**Table 1**: Network statistics (N, ⟨k⟩, T, λ_max) and test accuracy
-
-## Installation
+Install dependencies using:
 
 ```bash
-git clone https://github.com/yourusername/I-criterion-validation.git
-cd I-criterion-validation
-pip install numpy scipy matplotlib pandas networkx scikit-learn
+pip install -r requirements.txt
+
+numpy>=1.21.0
+scipy>=1.7.0
+matplotlib>=3.4.0
+pandas>=1.3.0
+networkx>=2.6.0
+scikit-learn>=1.0.0
+
 Usage
-1. Generate hysteresis data
+Step 1: Generate Hysteresis Data
 bash
-python NJP_hypersis_7_3.py
-Important: Update network file paths in the script:
+python generate_hysteresis.py
+This script:
 
-python
-networks = {
-    'C.elegans_pharynx': r'your_path/c.elegans.herm_pharynx_1.graphml',
-    # ... update other paths
-}
-2. Analyze results and generate figures
+Loads the 7 empirical networks from GraphML files
+
+Simulates SIS, Kuramoto, and evolutionary game dynamics
+
+Scans 30 parameter points per dynamics
+
+Saves 21 CSV files (7 networks × 3 dynamics) with columns: [parameter, low_init, high_init]
+
+Output: all_networks_hysteresis_30points_YYYYMMDD_HHMMSS/ directory containing 21 CSV files.
+
+Step 2: Analyze I-Criterion
 bash
-python NJP.py
-Important: Update data paths in the script:
+python analyze_I_criterion.py
+This script:
 
-python
-DATA_PATH = r'path/to/your/hysteresis_data'
-JSON_PATH = r'path/to/your/structural_params.json'
-Data Format
-Input
-GraphML files: 7 empirical hypergraph networks (not included)
+Reads all 21 CSV files
 
-JSON file: Structural parameters (N, ⟨k⟩, T, λ_max) for each network
+Computes I-values using $\mathcal{I} = \log(v/H)$
 
-Output
-CSV files: Hysteresis data (30 points per dynamics)
+Performs leave-one-network-out cross-validation
 
-Figures: Figure1.pdf/png, Figure2.pdf/png, Figure3.pdf/png
+Generates all figures and tables
 
-Table: Table1.tex/csv
+Output:
 
-Results Summary
-The I-criterion achieves:
+Figure1.pdf/png - I-value distribution, ROC curve, confusion matrix
 
-Mean test accuracy: ~85% (leave-one-network-out)
+Figure2.pdf/png - Network accuracy bar chart, per-dynamics heatmap
 
-AUC: ~0.92
+Figure3.pdf/png - I-value vs parameter for all 7 networks
 
-Consistent performance across all 3 dynamical models
+Table1.tex/csv - Network statistics (N, ⟨k⟩, T, λ_max, Accuracy)
+
+Step 3: Reproduce Paper Results
+The analysis results are saved in the same directory as the CSV files. Key results:
+
+Metric	Value
+Mean test accuracy	94.0% ± 6.2%
+Total samples	630 (7 × 3 × 30)
+Optimal threshold I_c	≈ 1.25 (consistent across networks)
+Data Sources
+Empirical Networks
+Network	Nodes	Source
+C. elegans pharynx	279	NeuroData
+Mixed species brain	65	NeuroData
+Mouse visual cortex 1	29	NeuroData
+Mouse visual cortex 2	195	NeuroData
+P. pacificus synaptic	54	NeuroData
+Rhesus brain 2	91	NeuroData
+Rhesus cerebral cortex 1	91	NeuroData
+Structural Parameters
+The file data/all_results_paper.json contains network structural parameters (N, ⟨k⟩, T, λ_max) extracted from previous simulations. These are used only for Table 1 and are independent of the I-criterion calculations.
 
 Citation
 If you use this code in your research, please cite:
 
 bibtex
-@article{your_paper_2024,
-  title={I-Criterion Validation on Empirical Hypergraphs},
-  author={LI Zhenpeng et al.},
-  journal={NJP},
-  year={2026}
+@article{li2026Icrit,
+  title={The I-Criterion: An Information-Based Predictor of Explosive Transitions in Empirical Higher-Order Networks},
+  author={Li, Zhenpeng and Yan, Zhihua and Tang, Xijin},
+  journal={New Journal of Physics},
+  year={2026},
+  note={Submitted}
 }
 License
-MIT License - see LICENSE for details.
+This code is released under the MIT License.
 
 Contact
-For questions or issues, please open an issue on GitHub.
-
-text
-
-## `requirements.txt`
-
-```txt
-numpy>=1.20.0
-scipy>=1.7.0
-matplotlib>=3.4.0
-pandas>=1.3.0
-networkx>=2.6.0
-scikit-learn>=0.24.0
-.gitignore
-gitignore
-# Python
-__pycache__/
-*.py[cod]
-*.so
-.Python
-env/
-venv/
-.venv/
-
-# Data files (not to be committed)
-*.graphml
-*.csv
-*.json
-
-# Results
-*.pdf
-*.png
-*.tex
-
-# IDE
-.vscode/
-.idea/
-.DS_Store
-仓库结构
-text
-I-criterion-validation/
-├── README.md                      # 项目说明
-├── requirements.txt               # 依赖包
-├── .gitignore                     # Git忽略规则
-├── LICENSE                        # MIT许可证
-├── NJP_hypersis_7_3.py           # 数据生成脚本
-└── NJP.py                         # 分析绘图脚本
-
+For questions or issues, please contact: lizhenpeng@amss.ac.cn
 
