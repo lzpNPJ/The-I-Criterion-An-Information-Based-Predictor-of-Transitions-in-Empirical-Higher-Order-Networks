@@ -105,7 +105,7 @@ bibtex
 @article{li2026Icrit,
   title={The I-Criterion: An Information-Based Predictor of Explosive Transitions in Empirical Higher-Order Networks},
   author={Li, Zhenpeng and Yan, Zhihua and Tang, Xijin},
-  journal={New Journal of Physics},
+  journal={CHAOS},
   year={2026},
   note={Submitted}
 }
